@@ -101,7 +101,7 @@ $(document).ready(function () {
   }
 
 
-  $(".player").on("click", function () {
+  $(document).on("click", ".player", function () {
     var p = $(this).attr("id");
     var divID = "#" + p + "div"
     $(divID).empty();
@@ -144,6 +144,13 @@ $(document).ready(function () {
   });
 
   database.ref().on("value", function (snapshot) {
+    if (snapshot.val().p1.button && snapshot.val().p2.button) {
+      $("#p1div").empty();
+      $("#p2div").empty();
+      $("#winnerDiv").empty();
+      $("#p1div").append(snapshot.val().p1.button);
+      $("#p2div").append(snapshot.val().p2.button);
+    }
     if (snapshot.val().p1.name) {
       p1Name = snapshot.val().p1.name;
       p1uid = snapshot.val().p1.uid;
@@ -156,49 +163,49 @@ $(document).ready(function () {
     }
     //If both p1.name and p2.name are defined, start countdown to start game.
     if (snapshot.val().p1.name && snapshot.val().p2.name) {
-      console.log("Both are defined");
       playGame();
-    }
-    //If both p1.choice and p2.choice are defined, show choices to audience & find the winner
-    if (snapshot.val().p1.choice && snapshot.val().p2.choice) {
-      //Assign choices to variables to make things simpler
-      var p1choice = snapshot.val().p1.choice;
-      var p2choice = snapshot.val().p2.choice;
-      //Show both players' choices to everyone
-      $("#p1div").empty();
-      $("#p1div").append(p1Name);
-      var picsDiv1 = $("<div>");
-      picsDiv1.attr("class", "picsDiv row text-center");
-      var p1img = $("<img>")
-      p1img.attr("src", "assets/images/" + p1choice + ".png");
-      picsDiv1.append(p1img);
-      $("#p1div").append(picsDiv1);
-      $("#p2div").empty();
-      $("#p2div").append(p2Name);
-      var picsDiv2 = $("<div>");
-      picsDiv2.attr("class", "picsDiv row text-center");
-      var p2img = $("<img>")
-      p2img.attr("src", "assets/images/" + p2choice + ".png");
-      picsDiv2.append(p2img);
-      $("#p2div").append(picsDiv2);
-      //pick winner
-      if (p1choice === "rock" && p2choice === "scissors") {
-        $("#winner").text(p1Name + " wins!");
-      } else if (p1choice === "scissors" && p2choice === "paper") {
-        $("#winner").text(p1Name + " wins!");
-      } else if (p1choice === "paper" && p2choice === "rock") {
-        $("#winner").text(p1Name + " wins!");
-      } else if (p1choice === p2choice) {
-        $("#winner").text("It's a tie!");
-      } else {
-       $("#winner").text(p2Name + " wins!");
+      //If both p1.choice and p2.choice are defined, show choices to audience & find the winner
+      if (snapshot.val().p1.choice && snapshot.val().p2.choice) {
+        //Assign choices to variables to make things simpler
+        var p1choice = snapshot.val().p1.choice;
+        var p2choice = snapshot.val().p2.choice;
+        //Show both players' choices to everyone
+        $("#p1div").empty();
+        $("#p1div").append(p1Name);
+        var picsDiv1 = $("<div>");
+        picsDiv1.attr("class", "picsDiv row text-center");
+        var p1img = $("<img>")
+        p1img.attr("src", "assets/images/" + p1choice + ".png");
+        picsDiv1.append(p1img);
+        $("#p1div").append(picsDiv1);
+        $("#p2div").empty();
+        $("#p2div").append(p2Name);
+        var picsDiv2 = $("<div>");
+        picsDiv2.attr("class", "picsDiv row text-center");
+        var p2img = $("<img>")
+        p2img.attr("src", "assets/images/" + p2choice + ".png");
+        picsDiv2.append(p2img);
+        $("#p2div").append(picsDiv2);
+        //pick winner
+        if (p1choice === "rock" && p2choice === "scissors") {
+          $("#winner").text(p1Name + " wins!");
+        } else if (p1choice === "scissors" && p2choice === "paper") {
+          $("#winner").text(p1Name + " wins!");
+        } else if (p1choice === "paper" && p2choice === "rock") {
+          $("#winner").text(p1Name + " wins!");
+        } else if (p1choice === p2choice) {
+          $("#winner").text("It's a tie!");
+        } else {
+          $("#winner").text(p2Name + " wins!");
+        }
+        var reset = $("<button>");
+        reset.attr("id", "reset");
+        reset.attr("class", "btn");
+        reset.text("Reset game");
+        $("#winnerDiv").append(reset);
       }
-      var reset = $("<button>");
-      reset.attr("id", "reset");
-      reset.attr("class", "btn");
-      reset.text("Reset game");
-      $("#winnerDiv").append(reset);
-    } 
+    }
+
   });
 
   //Record player 1's choice 
@@ -250,12 +257,13 @@ $(document).ready(function () {
   $(document).on("click", "#reset", function () {
     database.ref().update({
       p1: {
-        name: null,
+        button: "<button id='p1' class='player btn'>Player 1</button>"
       },
       p2: {
-        name: null,
+        button: "<button id='p2' class='player btn'>Player 2</button>"
       }
     });
+
   })
 
 
