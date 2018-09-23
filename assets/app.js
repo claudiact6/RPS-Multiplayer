@@ -11,6 +11,27 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 var uid = "";
+var p1Name = "";
+var p2Name = "";
+
+function updateP1Div() {
+  $("#p1div").empty();
+  var h3 = $("<h3>")
+  h3.text(p1Name);
+  $("#p1div").append(h3);
+}
+
+function updateP2Div() {
+  $("#p2div").empty();
+  var h3 = $("<h3>")
+  h3.text(p2Name);
+  $("#p2div").append(h3);
+}
+
+function updateDivs() {
+  updateP1Div();
+  updateP2Div();
+}
 
 $(document).ready(function () {
   var user = firebase.auth().getCurrentUser;
@@ -38,6 +59,16 @@ $(document).ready(function () {
     });
   }
 
+  //This is for people who show up to the page once the action has already started: they should see the names and stuff
+  database.ref().once('value').then(function (snapshot) {
+    if (snapshot.val().p1.name && snapshot.val().p2.name) {
+      console.log(" starting game, Both are defined");
+      p1Name = snapshot.val().p1.name;
+      p2Name = snapshot.val().p2.name;
+      updateDivs();
+    };
+  });
+
 
   $(".player").on("click", function () {
     var p = $(this).attr("id");
@@ -61,9 +92,7 @@ $(document).ready(function () {
 
   $(document).on("click", ".go", function (event) {
     event.preventDefault();
-    console.log("clicked");
     goID = $(this).attr("id");
-    console.log(goID);
     if (goID === "gop1") {
       name = $("#p1").val();
       database.ref().update({
@@ -71,15 +100,6 @@ $(document).ready(function () {
           name: name,
           uid: uid
         }
-      });
-      //CHECK HERE HOW TO REFERENCE DB VALUES WITHOUT USING SNAPSHOT
-      database.ref().on("value", function (snapshot) {
-        var p1Name = snapshot.val().p1.name;
-        console.log(p1Name);
-        $("#p1div").empty();
-        var h3 = $("<h3>")
-        h3.text(p1Name);
-        $("#p1div").append(h3);
       });
     } else {
       name = $("#p2").val();
@@ -89,25 +109,36 @@ $(document).ready(function () {
           uid: uid
         }
       });
-      database.ref().on("value", function (snapshot) {
-        var p2Name = snapshot.val().p2.name;
-        console.log(p2Name);
-        $("#p2div").empty();
-        var h3 = $("<h3>")
-        h3.text(p2Name);
-        $("#p2div").append(h3);
-      });
     }
   });
 
   database.ref().on("value", function (snapshot) {
+    if (snapshot.val().p1.name) {
+      p1Name = snapshot.val().p1.name;
+      updateP1Div();
+    }
+    if (snapshot.val().p2.name) {
+      p2Name = snapshot.val().p2.name;
+      updateP2Div();
+    }
     //If both p1.name and p2.name are defined, start countdown to start game.
     if (snapshot.val().p1.name && snapshot.val().p2.name) {
       console.log("Both are defined");
+
     }
 
   });
 
+  $("#reset").on("click", function () {
+    database.ref().update({
+      p1: {
+        name: null,
+      },
+      p2: {
+        name: null,
+      }
+    });
+  })
 
 
 
