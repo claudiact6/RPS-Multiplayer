@@ -34,12 +34,41 @@ function updateDivs() {
   updateP1Div();
   updateP2Div();
 }
-
+$("#p1div").html("<img src='rock");
 function playGame() {
   if(uid === p1uid) {
-    $("#p1div").text("Omg! You're player 1!");
+    $("#p1div").empty();
+    var picsDiv = $("<div>");
+    picsDiv.attr("class", "picsDiv row text-center");
+    var rock = $("<img>")
+    rock.attr("src", "assets/images/rock.png");
+    rock.attr("id", "rock");
+    var paper = $("<img>")
+    paper.attr("src", "assets/images/paper.png");
+    paper.attr("id", "paper");
+    var scissors = $("<img>")
+    scissors.attr("src", "assets/images/scissors.png");
+    scissors.attr("id", "scissors");
+    picsDiv.append(rock,paper,scissors);
+    $("#p1div").append(picsDiv);
   } else if (uid === p2uid) {
-    $("#p2div").text("Omg! Hi player 2!");
+    $("#p2div").empty();
+    var picsDiv = $("<div>");
+    picsDiv.attr("class", "picsDiv row text-center");
+    var rock = $("<img>")
+    rock.attr("src", "assets/images/rock.png");
+    rock.attr("id", "rock");
+    rock.attr("class", "img-fluid");
+    var paper = $("<img>")
+    paper.attr("src", "assets/images/paper.png");
+    paper.attr("id", "paper");
+    paper.attr("class", "img-fluid");
+    var scissors = $("<img>")
+    scissors.attr("src", "assets/images/scissors.png");
+    scissors.attr("id", "scissors");
+    scissors.attr("class", "img-fluid");
+    picsDiv.append(rock,paper,scissors);
+    $("#p2div").append(picsDiv);
   } else {
     $("#p1div").text("Players are picking their option");
   }
@@ -70,16 +99,6 @@ $(document).ready(function () {
       // ...
     });
   }
-
-  //This is for people who show up to the page once the action has already started: they should see the names and stuff
-/*   database.ref().once('value').then(function (snapshot) {
-    if (snapshot.val().p1.name && snapshot.val().p2.name) {
-      console.log(" starting game, Both are defined");
-      p1Name = snapshot.val().p1.name;
-      p2Name = snapshot.val().p2.name;
-      updateDivs();
-    };
-  }); */
 
 
   $(".player").on("click", function () {
@@ -142,6 +161,11 @@ $(document).ready(function () {
     }
 
   });
+
+  $(document).on("click", "img", function() {
+    var choice = $(this).attr("id");
+    console.log(choice);
+  })
 
   $("#reset").on("click", function () {
     database.ref().update({
