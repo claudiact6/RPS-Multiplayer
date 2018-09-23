@@ -10,8 +10,35 @@ var config = {
 firebase.initializeApp(config);
 
 var database = firebase.database();
+var uid = "";
 
 $(document).ready(function () {
+  var user = firebase.auth().getCurrentUser;
+  if (user != null) {
+    uid = user.uid;
+    console.log(uid);
+  } else {
+    firebase.auth().signInAnonymously().catch(function (error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ...
+    });
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        // User is signed in.
+        var isAnonymous = user.isAnonymous;
+        uid = user.uid;
+        console.log("user id is: ", uid);
+      } else {
+        // User is signed out.
+        // ...
+      }
+      // ...
+    });
+  }
+
+
   $(".player").on("click", function () {
     var p = $(this).attr("id");
     var divID = "#" + p + "div"
@@ -32,15 +59,18 @@ $(document).ready(function () {
     $(divID).append(form);
   });
 
-  $(".go").on("click", function (event) {
+  $(document).on("click", ".go", function (event) {
     event.preventDefault();
     console.log("clicked");
     goID = $(this).attr("id");
     console.log(goID);
     if (goID === "gop1") {
       name = $("#p1").val();
-      database.ref().set({
-        p1: name,
+      database.ref().update({
+        p1: {
+          name: name,
+          uid: uid
+        }
       });
       //CHECK HERE HOW TO REFERENCE DB VALUES WITHOUT USING SNAPSHOT
       database.ref().on("value", function (snapshot) {
@@ -53,11 +83,15 @@ $(document).ready(function () {
       });
     } else {
       name = $("#p2").val();
-      database.ref().set({
-        p2: name,
+      database.ref().update({
+        p2: {
+          name: name,
+          uid: uid
+        }
       });
       database.ref().on("value", function (snapshot) {
         var p2Name = snapshot.val().p2.name;
+        console.log(p2Name);
         $("#p2div").empty();
         var h3 = $("<h3>")
         h3.text(p2Name);
@@ -66,11 +100,13 @@ $(document).ready(function () {
     }
   });
 
-database.ref().on("value", function (snapshot) {
-  //If both p1.name and p2.name are defined, start countdown to start game.
+  database.ref().on("value", function (snapshot) {
+    //If both p1.name and p2.name are defined, start countdown to start game.
+    if (snapshot.val().p1.name && snapshot.val().p2.name) {
+      console.log("Both are defined");
+    }
 
-
-});
+  });
 
 
 
