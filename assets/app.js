@@ -13,6 +13,8 @@ var database = firebase.database();
 var uid = "";
 var p1Name = "";
 var p2Name = "";
+var p1uid = "";
+var p2uid = "";
 
 function updateP1Div() {
   $("#p1div").empty();
@@ -31,6 +33,16 @@ function updateP2Div() {
 function updateDivs() {
   updateP1Div();
   updateP2Div();
+}
+
+function playGame() {
+  if(uid === p1uid) {
+    $("#p1div").text("Omg! You're player 1!");
+  } else if (uid === p2uid) {
+    $("#p2div").text("Omg! Hi player 2!");
+  } else {
+    $("#p1div").text("Players are picking their option");
+  }
 }
 
 $(document).ready(function () {
@@ -115,16 +127,18 @@ $(document).ready(function () {
   database.ref().on("value", function (snapshot) {
     if (snapshot.val().p1.name) {
       p1Name = snapshot.val().p1.name;
+      p1uid = snapshot.val().p1.uid;
       updateP1Div();
     }
     if (snapshot.val().p2.name) {
       p2Name = snapshot.val().p2.name;
+      p2uid = snapshot.val().p2.uid;
       updateP2Div();
     }
     //If both p1.name and p2.name are defined, start countdown to start game.
     if (snapshot.val().p1.name && snapshot.val().p2.name) {
       console.log("Both are defined");
-
+      playGame();
     }
 
   });
