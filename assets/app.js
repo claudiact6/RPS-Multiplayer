@@ -37,6 +37,8 @@ function updateDivs() {
 $("#p1div").html("<img src='rock");
 function playGame() {
   if (uid === p1uid) {
+    $("#instructions").text("Choose your weapon:");
+    $("#subinstructions").hide();
     $("#p1div").empty();
     var picsDiv = $("<div>");
     picsDiv.attr("class", "picsDiv row text-center");
@@ -52,6 +54,8 @@ function playGame() {
     picsDiv.append(rock, paper, scissors);
     $("#p1div").append(picsDiv);
   } else if (uid === p2uid) {
+    $("#instructions").text("Choose your weapon:");
+    $("#subinstructions").hide();
     $("#p2div").empty();
     var picsDiv = $("<div>");
     picsDiv.attr("class", "picsDiv row text-center");
@@ -70,7 +74,8 @@ function playGame() {
     picsDiv.append(rock, paper, scissors);
     $("#p2div").append(picsDiv);
   } else {
-    $("#p1div").text("Players are picking their option");
+    $("#instructions").text("Players are picking their options");
+    $("#subinstructions").hide();
   }
 }
 
@@ -89,7 +94,6 @@ $(document).ready(function () {
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
         // User is signed in.
-        var isAnonymous = user.isAnonymous;
         uid = user.uid;
         console.log("user id is: ", uid);
       } else {
@@ -148,6 +152,8 @@ $(document).ready(function () {
       $("#p1div").empty();
       $("#p2div").empty();
       $("#winnerDiv").empty();
+      $("#instructions").text("Let's get started!");
+      $("#subinstructions").show();
       $("#p1div").append(snapshot.val().p1.button);
       $("#p2div").append(snapshot.val().p2.button);
     }
@@ -169,6 +175,8 @@ $(document).ready(function () {
         //Assign choices to variables to make things simpler
         var p1choice = snapshot.val().p1.choice;
         var p2choice = snapshot.val().p2.choice;
+        //Hide
+        $("#instructions").text("And the results are...");
         //Show both players' choices to everyone
         $("#p1div").empty();
         $("#p1div").append(p1Name);
@@ -196,6 +204,7 @@ $(document).ready(function () {
         } else if (p1choice === p2choice) {
           $("#winner").text("It's a tie!");
         } else {
+          console.log(p2Name + " wins!")
           $("#winner").text(p2Name + " wins!");
         }
         var reset = $("<button>");
