@@ -60,14 +60,14 @@ $(document).ready(function () {
   }
 
   //This is for people who show up to the page once the action has already started: they should see the names and stuff
-  database.ref().once('value').then(function (snapshot) {
+/*   database.ref().once('value').then(function (snapshot) {
     if (snapshot.val().p1.name && snapshot.val().p2.name) {
       console.log(" starting game, Both are defined");
       p1Name = snapshot.val().p1.name;
       p2Name = snapshot.val().p2.name;
       updateDivs();
     };
-  });
+  }); */
 
 
   $(".player").on("click", function () {
